@@ -97,6 +97,31 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               const SizedBox(height: 20),
               const Text(
+                'Auto-scroll with image list:',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: AutoScrollBeforeAfter(
+                      images: [
+                        'https://picsum.photos/400/300?random=1',
+                        'https://picsum.photos/400/300?random=2',
+                        'https://picsum.photos/400/300?random=3',
+                        'https://picsum.photos/400/300?random=4',
+                      ],
+                      maintainFinalState: false,
+                      waitDuration: const Duration(seconds: 1),
+                      speedDuration: const Duration(seconds: 2),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
                 'Auto-scroll with looping:',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),

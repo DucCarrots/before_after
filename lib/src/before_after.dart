@@ -48,8 +48,12 @@ class BeforeAfter extends StatefulWidget {
 
   final SliderDirection direction;
 
+  /// The height of the before/after widget container.
+  /// If provided, images will be sized to fill this height while maintaining aspect ratio.
   final double? height;
 
+  /// The width of the before/after widget container.
+  /// If provided, images will be sized to fill this width while maintaining aspect ratio.
   final double? width;
 
   final double? trackWidth;
@@ -256,6 +260,25 @@ class _BeforeAfterState extends State<BeforeAfter>
     setState(() => _dragging = false);
   }
 
+  Widget _wrapWithSizing(Widget child) {
+    if (widget.width == null && widget.height == null) {
+      return child;
+    }
+
+    return SizedBox(
+      width: widget.width,
+      height: widget.height,
+      child: child is Image
+          ? ClipRect(
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: child,
+              ),
+            )
+          : child,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -294,11 +317,9 @@ class _BeforeAfterState extends State<BeforeAfter>
         ? _handleThumbPositionChanged
         : null;
 
-    final before = SizedBox(
-        width: widget.width, height: widget.height, child: widget.before);
+    final before = _wrapWithSizing(widget.before);
 
-    final after = SizedBox(
-        width: widget.width, height: widget.height, child: widget.after);
+    final after = _wrapWithSizing(widget.after);
 
     final Map<ShortcutActivator, Intent> shortcutMap;
     switch (MediaQuery.navigationModeOf(context)) {
@@ -432,8 +453,9 @@ class Hide extends StatelessWidget {
 class AutoScrollBeforeAfter extends StatefulWidget {
   const AutoScrollBeforeAfter({
     super.key,
-    required this.before,
-    required this.after,
+    this.before,
+    this.after,
+    this.images,
     this.height,
     this.width,
     this.trackWidth,
@@ -451,10 +473,14 @@ class AutoScrollBeforeAfter extends StatefulWidget {
     this.loop = true,
     this.maintainFinalState = false,
     this.onValueChanged,
-  });
+  }) : assert(
+          (after != null) || images != null,
+          'Either provide both before and after widgets, or provide a list of images',
+        );
 
-  final Widget before;
-  final Widget after;
+  final Widget? before;
+  final Widget? after;
+  final List<String>? images;
   final SliderDirection direction;
   final double? height;
   final double? width;
@@ -482,6 +508,7 @@ class _AutoScrollBeforeAfterState extends State<AutoScrollBeforeAfter>
   late AnimationController _scrollController;
   late Animation<double> _scrollAnimation;
   double _currentValue = 0.0;
+  int _currentImageIndex = 0;
 
   @override
   void initState() {
@@ -519,6 +546,13 @@ class _AutoScrollBeforeAfterState extends State<AutoScrollBeforeAfter>
       if (mounted && widget.loop && !widget.maintainFinalState) {
         _scrollController.reset();
         _startAutoScroll();
+      } else if (mounted && widget.images != null && widget.loop) {
+        // Move to next image
+        setState(() {
+          _currentImageIndex = (_currentImageIndex + 1) % widget.images!.length;
+        });
+        _scrollController.reset();
+        _startAutoScroll();
       }
     });
   }
@@ -535,16 +569,35 @@ class _AutoScrollBeforeAfterState extends State<AutoScrollBeforeAfter>
       _scrollController.reset();
       setState(() {
         _currentValue = widget.initialValue;
+        _currentImageIndex = 0;
       });
       _startAutoScroll();
     }
   }
 
+  Widget _getCurrentImage() {
+    if (widget.images != null && widget.images!.isNotEmpty) {
+      return Image.network(widget.images![_currentImageIndex]);
+    }
+    return Container(); // Fallback
+  }
+
+  Widget _getNextImage() {
+    if (widget.images != null && widget.images!.isNotEmpty) {
+      final nextIndex = (_currentImageIndex + 1) % widget.images!.length;
+      return Image.network(widget.images![nextIndex]);
+    }
+    return Container(); // Fallback
+  }
+
   @override
   Widget build(BuildContext context) {
+    final beforeWidget = widget.before ?? _getCurrentImage();
+    final afterWidget = widget.after ?? _getNextImage();
+
     return BeforeAfter(
-      before: widget.before,
-      after: widget.after,
+      before: beforeWidget,
+      after: afterWidget,
       height: widget.height,
       width: widget.width,
       trackWidth: widget.trackWidth,

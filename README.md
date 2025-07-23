@@ -69,6 +69,23 @@ AutoScrollBeforeAfter(
 )
 ```
 
+### auto scroll with image list
+
+```dart
+AutoScrollBeforeAfter(
+  images: [
+    'https://example.com/image1.jpg',
+    'https://example.com/image2.jpg',
+    'https://example.com/image3.jpg',
+  ],
+  maintainFinalState: false,
+  waitDuration: const Duration(seconds: 2),
+  speedDuration: const Duration(seconds: 3),
+)
+```
+
+**Note:** You must provide either both `before` and `after` widgets, or a list of `images`. The widget will cycle through the images one by one, creating a slideshow effect.
+
 ## 🎨 Customization and Attributes
 
 | Field                  | Type                           | Description                                                                             |
@@ -100,8 +117,9 @@ AutoScrollBeforeAfter(
 
 | Field                  | Type                           | Description                                                                             |
 |------------------------|--------------------------------|-----------------------------------------------------------------------------------------|
-| before                 | Widget                         | The widget to be displayed before the slider.                                           |
-| after                  | Widget                         | The widget to be displayed after the slider.                                            |
+| before                 | Widget?                        | The widget to be displayed before the slider.                                           |
+| after                  | Widget?                        | The widget to be displayed after the slider.                                            |
+| images                 | List<String>?                  | A list of image URLs to cycle through. Either provide before/after widgets or images.   |
 | direction              | SliderDirection                | The drag direction of the slider.                                                       |
 | height                 | double?                        | The height of the AutoScrollBeforeAfter widget.                                         |
 | width                  | double?                        | The width of the AutoScrollBeforeAfter widget.                                          |
