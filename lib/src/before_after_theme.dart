@@ -1,30 +1,8 @@
 import 'dart:ui';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-/// A theme extension class that defines custom styling and behavior for the
-/// BeforeAfter widget.
-///
-/// Use the `BeforeAfterTheme` to customize the appearance and behavior of
-/// the BeforeAfter widget throughout your app. The theme properties can be
-/// accessed using `BeforeAfterTheme.of(context)`. By default, the theme's
-/// properties will be used. To override specific properties, use the
-/// `BeforeAfterThemeData.copyWith` method to create a new instance of the
-/// theme with the desired changes.
-///
-/// See also:
-///
-///   * [BeforeAfterThemeData], which is used to define the actual theme data.
-///   * [BeforeAfter], which uses the `BeforeAfterTheme` to apply the styling
-///     defined in the theme data.
-class BeforeAfterTheme extends ThemeExtension<BeforeAfterTheme>
-    with DiagnosticableTreeMixin {
-  /// Creates a BeforeAfterTheme.
-  ///
-  /// The [trackWidth], [trackColor], [thumbHeight], [thumbWidth], [overlayColor],
-  /// [thumbDecoration], and [mouseCursor] parameters can be used to customize
-  /// the appearance and behavior of the theme.
+class BeforeAfterTheme extends ThemeExtension<BeforeAfterTheme> {
   const BeforeAfterTheme({
     this.trackWidth,
     this.trackColor,
@@ -35,30 +13,20 @@ class BeforeAfterTheme extends ThemeExtension<BeforeAfterTheme>
     this.mouseCursor,
   });
 
-  /// The width of the track.
   final double? trackWidth;
 
-  /// The color of the track.
   final Color? trackColor;
 
-  /// The height of the thumb.
   final double? thumbHeight;
 
-  /// The width of the thumb.
   final double? thumbWidth;
 
-  /// The color of the overlay.
   final Color? overlayColor;
 
-  /// The decoration of the thumb.
   final BoxDecoration? thumbDecoration;
 
-  /// {@macro flutter.material.slider.mouseCursor}
-  ///
-  /// If specified, overrides the default value of [Slider.mouseCursor].
   final WidgetStateProperty<MouseCursor?>? mouseCursor;
 
-  /// Returns the closest [BeforeAfterTheme] instance given the [context].
   static BeforeAfterTheme of(BuildContext context) {
     final theme = Theme.of(context).extension<BeforeAfterTheme>();
     return theme ?? const BeforeAfterTheme();
@@ -127,19 +95,4 @@ class BeforeAfterTheme extends ThemeExtension<BeforeAfterTheme>
           overlayColor == other.overlayColor &&
           thumbDecoration == other.thumbDecoration &&
           mouseCursor == other.mouseCursor;
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(DoubleProperty('trackWidth', trackWidth));
-    properties.add(ColorProperty('trackColor', trackColor));
-    properties.add(DoubleProperty('thumbHeight', thumbHeight));
-    properties.add(DoubleProperty('thumbWidth', thumbWidth));
-    properties.add(ColorProperty('overlayColor', overlayColor));
-    properties.add(
-      DiagnosticsProperty<BoxDecoration>('thumbDecoration', thumbDecoration),
-    );
-    properties.add(DiagnosticsProperty<WidgetStateProperty<MouseCursor?>>(
-        'mouseCursor', mouseCursor));
-  }
 }

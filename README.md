@@ -57,6 +57,18 @@ BeforeAfter(
 )
 ```
 
+### auto scroll before after
+
+```dart
+AutoScrollBeforeAfter(
+  before: Image.asset('assets/after.png'),
+  after: Image.asset('assets/before.png'),
+  maintainFinalState: true, // Keeps the "after" image visible when animation ends
+  waitDuration: const Duration(seconds: 2),
+  speedDuration: const Duration(seconds: 3),
+)
+```
+
 ## 🎨 Customization and Attributes
 
 | Field                  | Type                           | Description                                                                             |
@@ -83,6 +95,30 @@ BeforeAfter(
 | focusNode              | FocusNode?                     | The focus node for the widget.                                                          |
 | autofocus              | bool                           | Whether the widget should be focused automatically.                                     |
 | mouseCursor            | MouseCursor?                   | The cursor for a mouse pointer when it enters or hovers over the widget.                |
+
+## AutoScrollBeforeAfter Attributes
+
+| Field                  | Type                           | Description                                                                             |
+|------------------------|--------------------------------|-----------------------------------------------------------------------------------------|
+| before                 | Widget                         | The widget to be displayed before the slider.                                           |
+| after                  | Widget                         | The widget to be displayed after the slider.                                            |
+| direction              | SliderDirection                | The drag direction of the slider.                                                       |
+| height                 | double?                        | The height of the AutoScrollBeforeAfter widget.                                         |
+| width                  | double?                        | The width of the AutoScrollBeforeAfter widget.                                          |
+| trackWidth             | double?                        | The width of the slider track.                                                          |
+| trackColor             | Color?                         | The color of the slider track.                                                          |
+| hideThumb              | bool                           | Whether to hide the slider thumb.                                                       |
+| thumbHeight            | double?                        | The height of the slider thumb.                                                         |
+| thumbWidth             | double?                        | The width of the slider thumb.                                                          |
+| thumbColor             | Color?                         | The color of the slider thumb.                                                          |
+| overlayColor           | MaterialStateProperty<Color?>? | The highlight color that's typically used to indicate that the slider thumb is focused. |
+| thumbDecoration        | BoxDecoration?                 | The decoration of the slider thumb.                                                     |
+| initialValue           | double                         | The initial position of the slider, ranging from 0.0 to 1.0.                            |
+| waitDuration           | Duration                       | The duration to wait before starting the animation.                                     |
+| speedDuration          | Duration                       | The duration of the animation from start to end.                                        |
+| loop                   | bool                           | Whether the animation should loop continuously.                                         |
+| maintainFinalState     | bool                           | Whether to maintain the final state (showing "after" image) when animation ends.        |
+| onValueChanged         | ValueChanged<double>?          | A callback function that is called when the value of the slider changes.                |
 
 # 📃 License
 

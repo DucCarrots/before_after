@@ -1,7 +1,8 @@
+import 'dart:ui';
+
 import 'package:before_after/src/before_after_theme.dart';
 import 'package:before_after/src/rect_clipper.dart';
 import 'package:before_after/src/slider_painter.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -9,37 +10,13 @@ part 'two_directional_slider.dart';
 
 const _defaultThumbElevation = 1.0;
 
-/// The direction in which slider can be dragged.
 enum SliderDirection {
-  /// The slider can be dragged by dragging either left or right.
   horizontal,
-
-  /// The slider can be dragged by dragging either up or down.
   vertical,
 }
 
-/// An interactive widget that allows comparing two images using a before and after view.
-///
-/// The [BeforeAfter] widget displays two images, [before] and [after], with a draggable slider in between.
-/// The slider can be used to reveal or hide portions of the images, providing a comparison effect.
-///
-/// The [direction] determines the direction of the slider and can be either [SliderDirection.horizontal] or [SliderDirection.vertical].
-/// The [value] specifies the initial position of the slider, ranging from 0.0 (fully hidden) to 1.0 (fully visible).
-/// The [onValueChanged] callback is called when the value of the slider changes, providing the updated value.
-///
-/// The appearance of the slider can be customized using various properties:
-///   - [thumbColor]: The color of the slider thumb.
-///   - [thumbRadius]: The radius of the slider thumb.
-///   - [overlayColor]: The color of the overlay when the images are revealed.
-///   - [thumbImage]: The image to be displayed on the slider thumb.
-///
-/// The position of the slider thumb can be controlled using [thumbPosition].
-/// The [onThumbPositionChanged] callback is called when the position of the thumb changes, providing the updated position.
-///
-/// Note: The [before] and [after] widgets should have the same size.
 class BeforeAfter extends StatefulWidget {
-  /// Creates a [BeforeAfter] widget with the specified before and after images.
-  BeforeAfter({
+  const BeforeAfter({
     super.key,
     required this.before,
     required this.after,
@@ -63,156 +40,62 @@ class BeforeAfter extends StatefulWidget {
     this.mouseCursor,
     this.focusNode,
     this.autofocus = false,
-  })  : assert(thumbDecoration == null || thumbDecoration.debugAssertIsValid()),
-        assert(
-          thumbColor == null || thumbDecoration == null,
-          'Cannot provide both a thumbColor and a thumbDecoration\n'
-          'To provide both, use "thumbDecoration: BoxDecoration(color: thumbColor)".',
-        );
+  });
 
-  /// The widget to be displayed before the slider.
   final Widget before;
 
-  /// The widget to be displayed after the slider.
   final Widget after;
 
-  /// The drag direction of the slider.
   final SliderDirection direction;
 
-  /// The height of the BeforeAfter widget.
   final double? height;
 
-  /// The width of the BeforeAfter widget.
   final double? width;
 
-  /// The width of the slider track.
   final double? trackWidth;
 
-  /// The color of the slider track.
   final Color? trackColor;
 
-  /// Whether to hide the slider thumb.
   final bool hideThumb;
 
-  /// The height of the slider thumb.
   final double? thumbHeight;
 
-  /// The width of the slider thumb.
   final double? thumbWidth;
 
-  /// The color of the slider thumb.
-  ///
-  /// This property should be preferred when the background is a simple color.
-  /// For other cases, such as gradients or images, use the [thumbDecoration]
-  /// property.
-  ///
-  /// If the [thumbDecoration] is used, this property must be null. A background
-  /// color may still be painted by the [thumbDecoration] even if this property
-  /// is null.
   final Color? thumbColor;
 
-  /// The highlight color that's typically used to indicate that
-  /// the slider thumb is focused.
   final WidgetStateProperty<Color?>? overlayColor;
 
-  /// The decoration of the slider thumb.
-  ///
-  /// Use the [thumbColor] property to specify a simple solid color.
   final BoxDecoration? thumbDecoration;
 
-  /// The number of discrete divisions on the slider.
   final int? divisions;
 
-  /// The position of the slider, ranging from 0.0 to 1.0.
   final double value;
 
-  /// A callback function that is called when the value of the slider changes.
   final ValueChanged<double>? onValueChanged;
 
-  /// The number of discrete divisions on the slider thumb.
   final int? thumbDivisions;
 
-  /// The position of the slider thumb, ranging from 0.0 to 1.0.
   final double thumbPosition;
 
-  /// A callback function that is called when the position of the thumb changes.
   final ValueChanged<double>? onThumbPositionChanged;
 
-  /// {@macro flutter.widgets.Focus.focusNode}
   final FocusNode? focusNode;
 
-  /// {@macro flutter.widgets.Focus.autofocus}
   final bool autofocus;
 
-  /// {@template flutter.material.slider.mouseCursor}
-  /// The cursor for a mouse pointer when it enters or is hovering over the
-  /// widget.
-  ///
-  /// If [mouseCursor] is a [MaterialStateProperty<MouseCursor>],
-  /// [WidgetStateProperty.resolve] is used for the following [WidgetState]s:
-  ///
-  ///  * [WidgetState.disabled].
-  ///  * [WidgetState.dragged].
-  ///  * [WidgetState.hovered].
-  ///  * [WidgetState.focused].
-  /// {@endtemplate}
-  ///
-  /// If null, then the value of [SliderThemeData.mouseCursor] is used. If that
-  /// is also null, then [WidgetStateMouseCursor.clickable] is used.
-  ///
-  /// See also:
-  ///
-  ///  * [WidgetStateMouseCursor], which can be used to create a [MouseCursor]
-  ///    that is also a [MaterialStateProperty<MouseCursor>].
   final MouseCursor? mouseCursor;
 
   @override
   State<BeforeAfter> createState() => _BeforeAfterState();
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<Widget>('before', before));
-    properties.add(DiagnosticsProperty<Widget>('after', after));
-    properties.add(DoubleProperty('height', height));
-    properties.add(DoubleProperty('width', width));
-    properties.add(DoubleProperty('trackWidth', trackWidth));
-    properties.add(ColorProperty('trackColor', trackColor));
-    properties.add(FlagProperty('hideThumb',
-        value: hideThumb,
-        ifTrue: 'thumb is hidden',
-        ifFalse: 'thumb is shown',
-        showName: true));
-    properties.add(DoubleProperty('thumbHeight', thumbHeight));
-    properties.add(DoubleProperty('thumbWidth', thumbWidth));
-    properties.add(ColorProperty('thumbColor', thumbColor));
-    properties.add(DiagnosticsProperty<WidgetStateProperty<Color?>>(
-        'overlayColor', overlayColor));
-    properties.add(DiagnosticsProperty<BoxDecoration>(
-        'thumbDecoration', thumbDecoration,
-        showName: false));
-    properties.add(EnumProperty<SliderDirection>('direction', direction));
-    properties.add(DoubleProperty('value', value));
-    properties.add(IntProperty('divisions', divisions));
-    properties.add(DoubleProperty('thumbPosition', thumbPosition));
-    properties.add(IntProperty('thumbDivisions', thumbDivisions));
-    properties.add(ObjectFlagProperty<ValueChanged<double>>.has(
-        'onValueChanged', onValueChanged));
-    properties.add(ObjectFlagProperty<ValueChanged<double>>.has(
-        'onThumbPositionChanged', onThumbPositionChanged));
-    properties
-        .add(DiagnosticsProperty<MouseCursor>('mouseCursor', mouseCursor));
-  }
 }
 
 class _BeforeAfterState extends State<BeforeAfter>
     with SingleTickerProviderStateMixin {
   final GlobalKey _sliderKey = GlobalKey();
 
-  // Action mapping for a focused slider.
   late Map<Type, Action<Intent>> _actionMap;
 
-  // Keyboard mapping for a focused slider.
   static const Map<ShortcutActivator, Intent> _traditionalNavShortcutMap = {
     SingleActivator(LogicalKeyboardKey.arrowUp): _AdjustSliderIntent.up(),
     SingleActivator(LogicalKeyboardKey.arrowDown): _AdjustSliderIntent.down(),
@@ -220,18 +103,13 @@ class _BeforeAfterState extends State<BeforeAfter>
     SingleActivator(LogicalKeyboardKey.arrowRight): _AdjustSliderIntent.right(),
   };
 
-  // Keyboard mapping for a focused slider when using directional navigation.
-  // The vertical inputs are not handled to allow navigating out of the slider.
   static const Map<ShortcutActivator, Intent> _directionalNavShortcutMap = {
     SingleActivator(LogicalKeyboardKey.arrowLeft): _AdjustSliderIntent.left(),
     SingleActivator(LogicalKeyboardKey.arrowRight): _AdjustSliderIntent.right(),
   };
 
-  // The focus node of the slider.
   late FocusNode _focusNode;
 
-  // Handle a potential change in focusNode by properly disposing of the old one
-  // and setting up the new one, if needed.
   void _updateFocusNode(FocusNode? old, FocusNode? current) {
     if ((old == null && current == null) || old == current) {
       return;
@@ -246,19 +124,13 @@ class _BeforeAfterState extends State<BeforeAfter>
     }
   }
 
-  // Animation controller that is run when the overlay (a.k.a radial reaction)
-  // is shown in response to user interaction.
   late AnimationController _overlayController;
 
-  // The painter that draws the slider.
   late final SliderPainter _painter;
 
   bool get _enabled =>
       widget.onValueChanged != null || widget.onThumbPositionChanged != null;
 
-  // The current rect of the thumb.
-  //
-  // This is used to determine if the thumb is getting hovered by the mouse.
   Rect? _thumbRect;
 
   void _onHover(PointerHoverEvent event) {
@@ -266,10 +138,8 @@ class _BeforeAfterState extends State<BeforeAfter>
     if (isThumbHovered == null) return;
 
     if (_enabled && isThumbHovered) {
-      // Only show overlay when pointer is hovering the thumb.
       _overlayController.forward();
     } else {
-      // Only remove overlay when Slider is unfocused.
       if (!_focused) {
         _overlayController.reverse();
       }
@@ -297,7 +167,6 @@ class _BeforeAfterState extends State<BeforeAfter>
         onInvoke: _actionHandler,
       ),
     };
-    // Only create a new node if the widget doesn't have one.
     _focusNode = widget.focusNode ?? FocusNode();
   }
 
@@ -315,7 +184,6 @@ class _BeforeAfterState extends State<BeforeAfter>
   }
 
   void _handleValueChanged(double value) {
-    assert(widget.onValueChanged != null);
     if (value != widget.value) {
       widget.onValueChanged!(value);
       _focusNode.requestFocus();
@@ -323,7 +191,6 @@ class _BeforeAfterState extends State<BeforeAfter>
   }
 
   void _handleThumbPositionChanged(double value) {
-    assert(widget.onThumbPositionChanged != null);
     if (value != widget.thumbPosition) {
       widget.onThumbPositionChanged!(value);
       _focusNode.requestFocus();
@@ -451,7 +318,7 @@ class _BeforeAfterState extends State<BeforeAfter>
     };
 
     final effectiveOverlayColor = widget.overlayColor?.resolve(states) ??
-        widget.trackColor?.withOpacity(0.12) ??
+        widget.trackColor?.withValues(alpha: 0.12) ??
         WidgetStateProperty.resolveAs<Color?>(
             beforeAfterTheme.overlayColor, states) ??
         WidgetStateProperty.resolveAs<Color>(defaults.overlayColor!, states);
@@ -471,7 +338,6 @@ class _BeforeAfterState extends State<BeforeAfter>
         break;
       case TargetPlatform.windows:
         handleDidGainAccessibilityFocus = () {
-          // Automatically activate the slider when it receives a11y focus.
           if (!_focusNode.hasFocus && _focusNode.canRequestFocus) {
             _focusNode.requestFocus();
           }
@@ -483,9 +349,6 @@ class _BeforeAfterState extends State<BeforeAfter>
       slider: true,
       onDidGainAccessibilityFocus: handleDidGainAccessibilityFocus,
       child: MouseRegion(
-        // Only used because we want to show the overlay when the mouse is
-        // hovering the thumb. This is not possible with FocusableActionDetector
-        // because it does not provides `PointerHoverEvent`.
         onHover: _onHover,
         child: FocusableActionDetector(
           actions: _actionMap,
@@ -546,15 +409,12 @@ class _BeforeAfterState extends State<BeforeAfter>
   }
 }
 
-/// A widget that hides its child widget from being visible.
 class Hide extends StatelessWidget {
-  /// Creates a [Hide] widget with the specified child.
   const Hide({
     super.key,
     required this.child,
   });
 
-  /// The child widget to be hidden.
   final Widget child;
 
   @override
@@ -565,6 +425,139 @@ class Hide extends StatelessWidget {
       maintainAnimation: true,
       maintainState: true,
       child: child,
+    );
+  }
+}
+
+class AutoScrollBeforeAfter extends StatefulWidget {
+  const AutoScrollBeforeAfter({
+    super.key,
+    required this.before,
+    required this.after,
+    this.height,
+    this.width,
+    this.trackWidth,
+    this.trackColor,
+    this.hideThumb = true,
+    this.thumbHeight,
+    this.thumbWidth,
+    this.thumbColor,
+    this.overlayColor,
+    this.thumbDecoration,
+    this.direction = SliderDirection.horizontal,
+    this.initialValue = 0.0,
+    this.waitDuration = const Duration(seconds: 2),
+    this.speedDuration = const Duration(seconds: 3),
+    this.loop = true,
+    this.maintainFinalState = false,
+    this.onValueChanged,
+  });
+
+  final Widget before;
+  final Widget after;
+  final SliderDirection direction;
+  final double? height;
+  final double? width;
+  final double? trackWidth;
+  final Color? trackColor;
+  final bool hideThumb;
+  final double? thumbHeight;
+  final double? thumbWidth;
+  final Color? thumbColor;
+  final WidgetStateProperty<Color?>? overlayColor;
+  final BoxDecoration? thumbDecoration;
+  final double initialValue;
+  final Duration waitDuration;
+  final Duration speedDuration;
+  final bool loop;
+  final bool maintainFinalState;
+  final ValueChanged<double>? onValueChanged;
+
+  @override
+  State<AutoScrollBeforeAfter> createState() => _AutoScrollBeforeAfterState();
+}
+
+class _AutoScrollBeforeAfterState extends State<AutoScrollBeforeAfter>
+    with TickerProviderStateMixin {
+  late AnimationController _scrollController;
+  late Animation<double> _scrollAnimation;
+  double _currentValue = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentValue = widget.initialValue;
+    _scrollController = AnimationController(
+      duration: widget.speedDuration,
+      vsync: this,
+    );
+    _scrollAnimation = Tween<double>(
+      begin: widget.initialValue,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _scrollController,
+      curve: Curves.easeInOut,
+    ));
+
+    _scrollAnimation.addListener(() {
+      setState(() {
+        _currentValue = _scrollAnimation.value;
+      });
+      widget.onValueChanged?.call(_currentValue);
+    });
+
+    _startAutoScroll();
+  }
+
+  void _startAutoScroll() async {
+    if (!mounted) return;
+
+    await Future.delayed(widget.waitDuration);
+    if (!mounted) return;
+
+    _scrollController.forward().then((_) {
+      if (mounted && widget.loop && !widget.maintainFinalState) {
+        _scrollController.reset();
+        _startAutoScroll();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  /// Resets the animation to the initial state and restarts the auto-scroll
+  void reset() {
+    if (mounted) {
+      _scrollController.reset();
+      setState(() {
+        _currentValue = widget.initialValue;
+      });
+      _startAutoScroll();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BeforeAfter(
+      before: widget.before,
+      after: widget.after,
+      height: widget.height,
+      width: widget.width,
+      trackWidth: widget.trackWidth,
+      trackColor: widget.trackColor,
+      hideThumb: widget.hideThumb,
+      thumbHeight: widget.thumbHeight,
+      thumbWidth: widget.thumbWidth,
+      thumbColor: widget.thumbColor,
+      overlayColor: widget.overlayColor,
+      thumbDecoration: widget.thumbDecoration,
+      direction: widget.direction,
+      value: _currentValue,
+      onValueChanged: widget.onValueChanged,
     );
   }
 }
@@ -596,7 +589,7 @@ class _BeforeAfterDefaultsM2 extends BeforeAfterTheme {
   Color get trackColor => _colors.primary;
 
   @override
-  Color get overlayColor => _colors.primary.withOpacity(0.12);
+  Color get overlayColor => _colors.primary.withValues(alpha: 0.12);
 
   @override
   BoxDecoration get thumbDecoration {
@@ -605,7 +598,7 @@ class _BeforeAfterDefaultsM2 extends BeforeAfterTheme {
       shape: BoxShape.circle,
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.2),
+          color: Colors.black.withValues(alpha: 0.2),
           blurRadius: _defaultThumbElevation,
           spreadRadius: _defaultThumbElevation / 2,
           offset: const Offset(0, _defaultThumbElevation / 2),
@@ -629,13 +622,13 @@ class _BeforeAfterDefaultsM3 extends BeforeAfterTheme {
   Color get overlayColor {
     return WidgetStateColor.resolveWith((states) {
       if (states.contains(WidgetState.hovered)) {
-        return _colors.primary.withOpacity(0.08);
+        return _colors.primary.withValues(alpha: 0.08);
       }
       if (states.contains(WidgetState.focused)) {
-        return _colors.primary.withOpacity(0.12);
+        return _colors.primary.withValues(alpha: 0.12);
       }
       if (states.contains(WidgetState.dragged)) {
-        return _colors.primary.withOpacity(0.12);
+        return _colors.primary.withValues(alpha: 0.12);
       }
 
       return Colors.transparent;
@@ -649,7 +642,7 @@ class _BeforeAfterDefaultsM3 extends BeforeAfterTheme {
       shape: BoxShape.circle,
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.2),
+          color: Colors.black.withValues(alpha: 0.2),
           blurRadius: _defaultThumbElevation,
           spreadRadius: _defaultThumbElevation / 2,
           offset: const Offset(0, _defaultThumbElevation / 2),
