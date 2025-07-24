@@ -40,6 +40,7 @@ class BeforeAfter extends StatefulWidget {
     this.mouseCursor,
     this.focusNode,
     this.autofocus = false,
+    this.ignorePointer = true,
   });
 
   final Widget before;
@@ -89,6 +90,8 @@ class BeforeAfter extends StatefulWidget {
   final bool autofocus;
 
   final MouseCursor? mouseCursor;
+
+  final bool ignorePointer;
 
   @override
   State<BeforeAfter> createState() => _BeforeAfterState();
@@ -379,51 +382,81 @@ class _BeforeAfterState extends State<BeforeAfter>
           onShowFocusHighlight: _handleFocusHighlightChanged,
           onShowHoverHighlight: _handleHoverChanged,
           mouseCursor: effectiveMouseCursor,
-          child: TwoDirectionalSlider(
-            key: _sliderKey,
-            initialHorizontalValue: widget.value,
-            initialVerticalValue: widget.thumbPosition,
-            verticalDivisions:
-                isXAxis ? widget.thumbDivisions : widget.divisions,
-            horizontalDivisions:
-                isXAxis ? widget.divisions : widget.thumbDivisions,
-            onVerticalChangeStart: _handleDragStart,
-            onVerticalChanged:
-                isXAxis ? onVerticalChanged : onHorizontalChanged,
-            onVerticalChangeEnd: _handleDragEnd,
-            onHorizontalChangeStart: _handleDragStart,
-            onHorizontalChanged:
-                isXAxis ? onHorizontalChanged : onVerticalChanged,
-            onHorizontalChangeEnd: _handleDragEnd,
-            child: Stack(
-              alignment: Alignment.center,
-              children: <Widget>[
-                before,
-                ClipRect(
-                  clipper: RectClipper(
-                    direction: widget.direction,
-                    clipFactor: widget.value,
+          child: widget.ignorePointer
+              ? Stack(
+                  alignment: Alignment.center,
+                  children: <Widget>[
+                    before,
+                    ClipRect(
+                      clipper: RectClipper(
+                        direction: widget.direction,
+                        clipFactor: widget.value,
+                      ),
+                      child: after,
+                    ),
+                    CustomPaint(
+                      painter: _painter
+                        ..axis = widget.direction
+                        ..value = widget.value
+                        ..trackWidth = effectiveTrackWidth
+                        ..trackColor = effectiveTrackColor
+                        ..hideThumb = widget.hideThumb
+                        ..thumbValue = widget.thumbPosition
+                        ..thumbHeight = effectiveThumbHeight
+                        ..thumbWidth = effectiveThumbWidth
+                        ..overlayColor = effectiveOverlayColor
+                        ..configuration = createLocalImageConfiguration(context)
+                        ..thumbDecoration = effectiveThumbDecoration,
+                      child: Hide(child: after),
+                    ),
+                  ],
+                )
+              : TwoDirectionalSlider(
+                  key: _sliderKey,
+                  initialHorizontalValue: widget.value,
+                  initialVerticalValue: widget.thumbPosition,
+                  verticalDivisions:
+                      isXAxis ? widget.thumbDivisions : widget.divisions,
+                  horizontalDivisions:
+                      isXAxis ? widget.divisions : widget.thumbDivisions,
+                  onVerticalChangeStart: _handleDragStart,
+                  onVerticalChanged:
+                      isXAxis ? onVerticalChanged : onHorizontalChanged,
+                  onVerticalChangeEnd: _handleDragEnd,
+                  onHorizontalChangeStart: _handleDragStart,
+                  onHorizontalChanged:
+                      isXAxis ? onHorizontalChanged : onVerticalChanged,
+                  onHorizontalChangeEnd: _handleDragEnd,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: <Widget>[
+                      before,
+                      ClipRect(
+                        clipper: RectClipper(
+                          direction: widget.direction,
+                          clipFactor: widget.value,
+                        ),
+                        child: after,
+                      ),
+                      CustomPaint(
+                        painter: _painter
+                          ..axis = widget.direction
+                          ..value = widget.value
+                          ..trackWidth = effectiveTrackWidth
+                          ..trackColor = effectiveTrackColor
+                          ..hideThumb = widget.hideThumb
+                          ..thumbValue = widget.thumbPosition
+                          ..thumbHeight = effectiveThumbHeight
+                          ..thumbWidth = effectiveThumbWidth
+                          ..overlayColor = effectiveOverlayColor
+                          ..configuration =
+                              createLocalImageConfiguration(context)
+                          ..thumbDecoration = effectiveThumbDecoration,
+                        child: Hide(child: after),
+                      ),
+                    ],
                   ),
-                  child: after,
                 ),
-                CustomPaint(
-                  painter: _painter
-                    ..axis = widget.direction
-                    ..value = widget.value
-                    ..trackWidth = effectiveTrackWidth
-                    ..trackColor = effectiveTrackColor
-                    ..hideThumb = widget.hideThumb
-                    ..thumbValue = widget.thumbPosition
-                    ..thumbHeight = effectiveThumbHeight
-                    ..thumbWidth = effectiveThumbWidth
-                    ..overlayColor = effectiveOverlayColor
-                    ..configuration = createLocalImageConfiguration(context)
-                    ..thumbDecoration = effectiveThumbDecoration,
-                  child: Hide(child: after),
-                ),
-              ],
-            ),
-          ),
         ),
       ),
     );
