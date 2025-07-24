@@ -506,6 +506,7 @@ class AutoScrollBeforeAfter extends StatefulWidget {
     this.loop = true,
     this.maintainFinalState = false,
     this.onValueChanged,
+    this.ignorePointer = true,
   }) : assert(
           (after != null) || images != null,
           'Either provide both before and after widgets, or provide a list of images',
@@ -531,6 +532,7 @@ class AutoScrollBeforeAfter extends StatefulWidget {
   final bool loop;
   final bool maintainFinalState;
   final ValueChanged<double>? onValueChanged;
+  final bool ignorePointer;
 
   @override
   State<AutoScrollBeforeAfter> createState() => _AutoScrollBeforeAfterState();
@@ -644,6 +646,7 @@ class _AutoScrollBeforeAfterState extends State<AutoScrollBeforeAfter>
       direction: widget.direction,
       value: _currentValue,
       onValueChanged: widget.onValueChanged,
+      ignorePointer: widget.ignorePointer,
     );
   }
 }
